@@ -591,12 +591,14 @@ namespace GEOCSG {
 	// Execute openscad
 	std::string openscad_command = "openscad "
 	    + osc.string() + " -o " + osc_stl.string() ;
+#if !defined(IS_NOMAD)
 	if(system(openscad_command.c_str())) {
 	    Logger::warn("CSG") << "Error while running openscad "
 				<< std::endl;
 	    Logger::warn("CSG") << "(for command: " << command <<") "
 				<< std::endl;
 	}
+#endif
 
 	if(!std::filesystem::is_regular_file(osc_stl)) {
 	    Logger::warn("CSG") << "Could not open " << osc_stl << std::endl;
@@ -649,6 +651,7 @@ namespace GEOCSG {
 				   << std::endl;
 		std::string openscad_command = "openscad "
 		    + input.string() + " -o " + cached_csg.string() ;
+    #if 0
 		if(system(openscad_command.c_str())) {
 		    Logger::warn("CSG") << "Error while running openscad "
 					<< std::endl;
@@ -656,6 +659,7 @@ namespace GEOCSG {
 					<< std::endl;
 		    return "";
 		}
+    #endif
 		if(std::filesystem::is_regular_file(cached_csg)) {
 		    Logger::out("CSG") << "Created " << cached_csg << std::endl;
 		} else {
