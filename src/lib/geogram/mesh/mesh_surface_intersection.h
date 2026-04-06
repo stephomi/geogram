@@ -58,6 +58,13 @@
  */
 
 namespace GEO {
+    inline std::function<bool(float)> gProgress;
+    inline std::function<bool(int)> gRange;
+    inline constexpr int STEP_PROLOGUE = 0;
+    inline constexpr int STEP_AABB_BOX = 1;
+    inline constexpr int STEP_AABB_TRI = 2;
+    inline constexpr int STEP_TRIANGULATE = 3;
+    inline constexpr int STEP_EPILOGUE = 4;
 
     struct IsectInfo;
 
