@@ -261,6 +261,7 @@ namespace GEO {
     }
 
     void MeshSurfaceIntersection::intersect_prologue() {
+        if (gRange && !gRange(STEP_PROLOGUE)) return;
 	Stopwatch W("Prologue", verbose_);
         if(!mesh_.facets.are_simplices()) {
             tessellate_facets(mesh_,3);
@@ -324,6 +325,9 @@ namespace GEO {
 		Stopwatch* W = new Stopwatch("AABB build", verbose_);
 		MeshFacetsAABB AABB(mesh_, AABB_INDIRECT);
 		delete W;
+
+        if (gRange && !gRange(STEP_AABB_BOX)) return;
+
 		// Get candidate pairs of intersecting facets
 		W = new Stopwatch("AABB box-box", verbose_);
 		AABB.compute_facet_bbox_intersections(report_BB);
@@ -434,6 +438,8 @@ namespace GEO {
 		    }
 		}
 	    }
+
+        if (gRange && !gRange(STEP_AABB_TRI)) return;
 
             // Compute facet-facet intersections in parallel
 	    Stopwatch* W = new Stopwatch("AABB tri-tri", verbose_);
@@ -582,6 +588,8 @@ namespace GEO {
 				   << std::endl;
             }
 
+            std::atomic<int> acc = 0;
+            if (gRange && !gRange(STEP_TRIANGULATE)) return;
 
 #define TRIANGULATE_IN_PARALLEL
 
@@ -603,6 +611,7 @@ namespace GEO {
                     index_t tid = Thread::current_id();
 
                     for(index_t k=k1; k<k2; ++k) {
+                        if (gProgress && !gProgress(float(acc++) / f_tot)) return;
                         index_t b = start[k];
                         index_t e = start[k+1];
 
@@ -697,6 +706,7 @@ namespace GEO {
     void MeshSurfaceIntersection::intersect_epilogue(
         const vector<IsectInfo>& intersections
     ) {
+        if (gRange && !gRange(STEP_EPILOGUE)) return;
 	Stopwatch W_epilogue("Epilogue", verbose_);
         // Vertices coming from intersections may land exactly
         // on an existing vertex (see #111)
@@ -838,9 +848,12 @@ namespace GEO {
 	}
 	Stopwatch W("Intersect", verbose_);
         intersect_prologue();
+        if (gProgress && !gProgress(0)) return;
         vector<IsectInfo> intersections;
         intersect_get_intersections(intersections);
+        if (gProgress && !gProgress(0)) return;
         intersect_remesh_intersections(intersections);
+        if (gProgress && !gProgress(0)) return;
         intersect_epilogue(intersections);
     }
 
