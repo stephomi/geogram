@@ -481,7 +481,12 @@ namespace GEO {
 
         void run_threads(ThreadGroup& threads) {
             running_threads_invocations_++;
-            thread_manager_->run_threads(threads);
+            try {
+                thread_manager_->run_threads(threads);
+            } catch(...) {
+                running_threads_invocations_--;
+                throw;
+            }
             running_threads_invocations_--;
         }
 

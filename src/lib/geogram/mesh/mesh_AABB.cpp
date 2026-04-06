@@ -945,7 +945,8 @@ namespace GEO {
 	    parallel_for_slice(
 		0, index_t(jobs.size()),
 		[&](index_t b, index_t e) {
-		    index_t t = Thread::current()->id();
+		    // null when parallel_for_slice runs the body inline on the caller
+		    index_t t = Thread::current_id();
 		    for(index_t i=b; i<e; ++i) {
 			const Job& J = jobs[i];
 			self_intersect_recursive(
